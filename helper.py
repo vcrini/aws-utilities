@@ -13,13 +13,14 @@ def convert(string):
     return string.upper().replace('-', '_')
 
 
-def command(command, args):
+def command(command, args, exit_on_error=True):
     logging.info("Launching " + command)
+    returncode = 0
     if args.dryrun:
         logging.info("this is a dry run")
     else:
-        returncode = 0
         returncode = subprocess.call(command, shell=True)
+    if exit_on_error and returncode != 0:
         sys.exit(returncode)
 
 
@@ -57,15 +58,11 @@ elif args.docker_push:
 elif args.docker_pull:
     # reading environment variables
     image_repo = os.environ['image_repo']
+    logging.debug("items: {}".format(items))
     for x in items:
         repo = "{}{}".format(image_repo, x)
         logging.info("Pulling {}".format(repo))
-        try:
-            command('docker pull {} | true'.format(repo), args)
-        except Exception:
-            logging.error(
-                "This error should not accout also if repository does not exists")
-
+        command('docker pull {}'.format(repo), args, False)
 elif args.docker_pull_or_die:
     # reading environment variables
     image_repo = os.environ['image_repo']
