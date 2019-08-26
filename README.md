@@ -1,2 +1,2 @@
 # aws-utilities
-A bunch of utilities for helpers to use in buildspec.yml
+A bunch of utilities for helpers to use in buildspec.yml.
