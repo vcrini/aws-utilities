@@ -9,6 +9,10 @@ import subprocess
 import sys
 
 
+def convert(string):
+    return string.upper().replace('-', '_')
+
+
 def command(command, args):
     logging.info("Launching " + command)
     if args.dryrun:
@@ -27,6 +31,7 @@ group.add_argument('--docker_pull', action='store_true')
 group.add_argument('--docker_pull_or_die', action='store_true')
 group.add_argument('--docker_push', action='store_true')
 group.add_argument('--docker_tag', action='store_true')
+group.add_argument('--ecs_compose', action='store_true')
 group.add_argument('--write_image_definitions', action='store_true')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--dryrun', action='store_true')
@@ -78,6 +83,14 @@ elif args.docker_build:
         logging.info("Building {}".format(repo))
         command('docker build -t {} --cache-from {} -f {} .'.format(repo,
                                                                     repo, dockerfile), args)
+elif args.ecs_compose:
+    logging.info("Building ecs environment variables")
+    for x in data:
+        name = "{}_VERSION".format(convert(x['name']))
+        os.putenv(name, x['version'])
+        logging.debug("{} -> {}".format(name, x['version']))
+    command("../utilities/ecs-cli compose --file docker-compose.yml --file docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment")
+
 elif args.write_image_definitions:
     image_repo = os.environ['image_repo']
     image_definitions = []
