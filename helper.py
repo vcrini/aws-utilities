@@ -60,7 +60,11 @@ elif args.docker_pull:
     for x in items:
         repo = "{}{}".format(image_repo, x)
         logging.info("Pulling {}".format(repo))
-        command('docker pull {} | true'.format(repo), args)
+        try:
+            command('docker pull {} | true'.format(repo), args)
+        except Exception:
+            logging.error(
+                "This error should not accout also if repository does not exists")
 
 elif args.docker_pull_or_die:
     # reading environment variables
