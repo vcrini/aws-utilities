@@ -91,14 +91,14 @@ elif args.ecs_compose_test:
         name = "{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
-    command("../utilities/ecs-cli compose --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment", args)
+    command("../utilities/ecs-cli compose --verbose  --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment", args)
 elif args.ecs_compose:
     logging.info("Building ecs environment variables")
     for x in data:
         name = "{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
-    command("../utilities/ecs-cli compose --file docker-compose.yml --file docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment", args)
+    command("../utilities/ecs-cli compose --verbose --file docker-compose.yml --file docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment", args)
 
 elif args.write_image_definitions:
     image_repo = os.environ['image_repo']
