@@ -93,9 +93,9 @@ elif args.ecs_compose_test:
         name = "{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
-    command("../utilities/ecs-cli compose --verbose  --cluster {} --project-name {} --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment".format(cluster, service_name), args)
+    command("../utilities/ecs-cli compose --verbose  --cluster {} --project-name {} --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up".format(cluster, service_name), args)
 elif args.ecs_compose:
-    # TODO add cluster, project name
+    # TODO add cluster, project name, remove --force-deployment, putting --timeout 0
     logging.info("Building ecs environment variables")
     for x in data:
         name = "{}_VERSION".format(convert(x['name']))
