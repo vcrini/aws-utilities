@@ -87,14 +87,15 @@ elif args.docker_build:
                                                                     repo, dockerfile), args)
 elif args.ecs_compose_test:
     cluster = os.environ['AWS_ECS_CLUSTER']
+    service_name = "{}-service".format(cluster)
     logging.info("Building ecs environment variables test")
     for x in data:
         name = "{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
-    command("../utilities/ecs-cli compose --verbose  --cluster {} --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment".format(cluster), args)
+    command("../utilities/ecs-cli compose --verbose  --cluster {} --project-name {} --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment".format(cluster), args)
 elif args.ecs_compose:
-    # TODO add cluster
+    # TODO add cluster, project name
     logging.info("Building ecs environment variables")
     for x in data:
         name = "{}_VERSION".format(convert(x['name']))
