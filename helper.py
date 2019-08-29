@@ -87,7 +87,7 @@ elif args.docker_build:
                                                                     repo, dockerfile), args)
 elif args.ecs_compose_test:
     cluster = os.environ['AWS_ECS_CLUSTER']
-    service_name = "{}-service".format(cluster)
+    service_name = os.environ['AWS_SERVICE_NAME']
     logging.info("Building ecs environment variables test")
     for x in data:
         name = "{}_VERSION".format(convert(x['name']))
