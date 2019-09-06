@@ -93,8 +93,7 @@ elif args.ecs_compose_test:
         name = "{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
-    command("../utilities/ecs-cli compose --cluster {} --project-name {} --tags 'Project=Fast Development' --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml create".format(cluster, service_name), args)
-    # command("aws ecs create-service --cluster {} --service-name {} --task-definition {} --load-balancers {} --target-group-arn arn:aws:elasticloadbalancing:eu-west-1:092467779203:targetgroup/fdh-all-adv-auth-tg/e926bcd8e7d9ab12 --target-group-arn arn:aws:elasticloadbalancing:eu-west-1:092467779203:targetgroup/fdh-all-adv-dashboard-tg/74e58b99ea8b261f --target-group-arn arn:aws:elasticloadbalancing:eu-west-1:092467779203:targetgroup/fdh-all-adv-python-tg/0382f3a4d7bdae02".format(cluster, service_name), args)
+    command("../utilities/ecs-cli compose --cluster {} --project-name {} --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml create --tags 'Project=Fast Development'".format(cluster, service_name), args)
 elif args.ecs_compose:
     # TODO add cluster, project name, remove --force-deployment, putting --timeout 0
     logging.info("Building ecs environment variables")
