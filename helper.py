@@ -88,7 +88,7 @@ elif args.docker_build:
                                                                     repo, dockerfile), args)
 elif args.create_or_update_service:
     cluster = os.environ['AWS_ECS_CLUSTER']
-    desired_count = os.environ['DESIRED_COUNT']
+    desired_count = os.environ['AWS_DESIRED_COUNT']
     service_arn = os.environ['AWS_SERVICE_ARN']
     task_definition = os.environ['task_definition']
     logging.info("Building ecs environment variables test")
