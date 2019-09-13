@@ -108,8 +108,8 @@ elif args.create_or_update_service:
     if len(service) != 0 and service[0]['status'] == 'INACTIVE':
         # create
         service_name = os.environ['AWS_SERVICE_NAME']
-        subnet = os.environ['SUBNET']
-        security_group = os.environ['SECURITY_GROUP']
+        subnet = os.environ['AWS_SUBNET']
+        security_group = os.environ['AWS_SECURITY_GROUP']
         command("aws ecs create-service --cluster {} --service-name {} --task-definition {} --launch-type EC2 --network-configuration awsvpcConfiguration={subnets={},securityGroups={}} --desired-count {} --load-balancers targetGroupArn=arn:aws:elasticloadbalancing:eu-west-1:092467779203:targetgroup/fdh-all-adv-auth-tg/e926bcd8e7d9ab12,containerName=allocation_advisorauth_server,containerPort=3001  targetGroupArn=arn:aws:elasticloadbalancing:eu-west-1:092467779203:targetgroup/fdh-all-adv-dashboard-tg/b8a053f1d0bda87f,containerName=allocation_advisor_dashboard,containerPort=3002 targetGroupArn=arn:aws:elasticloadbalancing:eu-west-1:092467779203:targetgroup/fdh-all-adv-python-tg/0382f3a4d7bdae02,containerName=allocation_advisorpython_server,containerPort=8000 ".format(cluster, service_name, task_definition, subnet, security_group, desired_count), args)
     else:
         # updatetask_definition
