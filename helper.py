@@ -103,7 +103,10 @@ elif args.create_or_update_service:
     logging.debug("reading json")
     with open(path, "r") as read_describe_services:
         data = json.load(read_describe_services)
-    if len(data['failures']):
+    logging.debug("data is: {}".format(data))
+    failures = data['failures']
+    logging.debug("failues is: {}".format(data))
+    if len(failures):
         # create
         service_name = os.environ['AWS_SERVICE_NAME']
         subnet = os.environ['SUBNET']
