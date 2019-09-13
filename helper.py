@@ -105,7 +105,7 @@ elif args.create_or_update_service:
         data = json.load(read_describe_services)
     logging.debug("data is: {}".format(data))
     service = data['services']
-    if len(service) == 0:
+    if len(service) != 0 and service[0]['status'] == 'INACTIVE':
         # create
         service_name = os.environ['AWS_SERVICE_NAME']
         subnet = os.environ['SUBNET']
