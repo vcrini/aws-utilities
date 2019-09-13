@@ -38,6 +38,7 @@ group.add_argument('--ecs_compose_test', action='store_true')
 group.add_argument('--write_image_definitions', action='store_true')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--dryrun', action='store_true')
+parser.add_argument('-f')
 args = parser.parse_args()
 datefmt = '%d-%b-%y %H:%M:%S'
 fmt = '[ECHO] %(message)s at %(asctime)s'
@@ -106,22 +107,31 @@ elif args.create_or_update_service:
     logging.debug("data is: {}".format(data))
     service = data['services']
     if len(service) != 0 and service[0]['status'] == 'INACTIVE':
+        import re
+        import yaml
         # create
-        service_name = os.environ['AWS_SERVICE_NAME']
-        subnet = os.environ['AWS_SUBNET']
-        security_group = os.environ['AWS_SECURITY_GROUP']
-        command("aws ecs create-service --cluster {} --service-name {} --task-definition {} --launch-type EC2 --network-configuration awsvpcConfiguration={{subnets={},securityGroups={}}} --desired-count {} --load-balancers targetGroupArn=arn:aws:elasticloadbalancing:eu-west-1:092467779203:targetgroup/fdh-all-adv-auth-tg/e926bcd8e7d9ab12,containerName=allocation_advisorauth_server,containerPort=3001  targetGroupArn=arn:aws:elasticloadbalancing:eu-west-1:092467779203:targetgroup/fdh-all-adv-dashboard-tg/b8a053f1d0bda87f,containerName=allocation_advisor_dashboard,containerPort=3002 targetGroupArn=arn:aws:elasticloadbalancing:eu-west-1:092467779203:targetgroup/fdh-all-adv-python-tg/0382f3a4d7bdae02,containerName=allocation_advisorpython_server,containerPort=8000 ".format(cluster, service_name, task_definition, subnet, security_group, desired_count), args)
+        # read all dockerfile with args.f
+        p = re.compile("\s+")
+        docker_compose = {}
+        for dc in p.split(args.f):
+            with open(dc, 'r') as content:
+                docker_compose.update(yaml.safe_load(content)
+        service_name=os.environ['AWS_SERVICE_NAME']
+        subnet=os.environ['AWS_SUBNET']
+        security_group=os.environ['AWS_SECURITY_GROUP']
+        auth_lb_target_groups=os.environ['AWS_AUTH_LB_TARGET_GROUPS']
+        command("aws ecs create-service --cluster {} --service-name {} --task-definition {} --launch-type EC2 --network-configuration awsvpcConfiguration={{subnets={},securityGroups={}}} --desired-count {} --load-balancers {} ".format(cluster, service_name, task_definition, subnet, security_group, desired_count, auth_lb_target_groups), args)
     else:
         # updatetask_definition
         # aws ecs update-service --cluster fdh-fastlane --service arn:aws:ecs:eu-west-1:092467779203:service/fdh-allocation-advisor --task-definition fdh-allocation-advisor:27  --force-new-deployment  --desired-count {}
         command("aws ecs update-service --cluster {} --service {} --task-definition {}  --force-new-deployment  --desired-count {} ".format(
             cluster, service_arn, task_definition, desired_count), args)
 elif args.ecs_compose_test:
-    cluster = os.environ['AWS_ECS_CLUSTER']
-    service_name = os.environ['AWS_SERVICE_NAME']
+    cluster=os.environ['AWS_ECS_CLUSTER']
+    service_name=os.environ['AWS_SERVICE_NAME']
     logging.info("Building ecs environment variables test")
     for x in data:
-        name = "{}_VERSION".format(convert(x['name']))
+        name="{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
     command("../utilities/ecs-cli compose --cluster {} --project-name {} --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml create --tags 'Project=Fast Development'".format(cluster, service_name), args)
@@ -129,16 +139,16 @@ elif args.ecs_compose:
     # TODO add cluster, project name, remove --force-deployment, putting --timeout 0
     logging.info("Building ecs environment variables")
     for x in data:
-        name = "{}_VERSION".format(convert(x['name']))
+        name="{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
     command("../utilities/ecs-cli compose --verbose --file docker-compose.yml --file docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment", args)
 
 elif args.write_image_definitions:
-    image_repo = os.environ['image_repo']
-    image_definitions = []
+    image_repo=os.environ['image_repo']
+    image_definitions=[]
     for x in data:
-        element = {"name": x['name'], "imageUri": "{}{}:{}".format(
+        element={"name": x['name'], "imageUri": "{}{}:{}".format(
             image_repo, x['name'], x['version'])}
         image_definitions.append(element)
     with open("/tmp/imagedefinitions.json", "w") as f:
