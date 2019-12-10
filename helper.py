@@ -38,6 +38,9 @@ group.add_argument('--ecs_compose_test', action='store_true')
 group.add_argument('--write_image_definitions', action='store_true')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--dryrun', action='store_true')
+parser.add_argument('-p', nargs='+')
+# must be used together with -p option
+parser.add_argument('--version')
 parser.add_argument('-f')
 args = parser.parse_args()
 datefmt = '%d-%b-%y %H:%M:%S'
@@ -46,9 +49,13 @@ if args.debug:
     logging.basicConfig(format=fmt, datefmt=datefmt, level=logging.DEBUG)
 else:
     logging.basicConfig(format=fmt, datefmt=datefmt, level=logging.INFO)
-# reading  json passed as standard input
-data = json.load(sys.stdin)
-items = ["{}:{}".format(x['name'], x['version']) for x in data]
+if args.p:
+    data = [{'name': x, 'version': args.version} for x in args.p]
+    items = ["{}:{}".format(x, args.version) for x in args.p]
+else:
+    # reading  json passed as standard input
+    data = json.load(sys.stdin)
+    items = ["{}:{}".format(x['name'], x['version']) for x in data]
 # parsing commands
 if args.dummy_command:
     command("ls -l", args)
@@ -107,15 +114,6 @@ elif args.create_or_update_service:
     logging.debug("data is: {}".format(data))
     service = data['services']
     if len(service) != 0 and service[0]['status'] == 'INACTIVE':
-        # import re
-        # import yaml
-        # create
-        # read all dockerfile with args.f
-        # p = re.compile("\s+")
-        # docker_compose = {}
-        # for dc in p.split(args.f):
-        #    with open(dc, 'r') as content:
-        #        docker_compose.update(yaml.safe_load(content)
         service_name = os.environ['AWS_SERVICE_NAME']
         subnet = os.environ['AWS_SUBNET']
         security_group = os.environ['AWS_SECURITY_GROUP']
@@ -124,7 +122,6 @@ elif args.create_or_update_service:
             cluster, service_name, task_definition, subnet, security_group, desired_count, auth_lb_target_groups), args)
     else:
         # updatetask_definition
-        # aws ecs update-service --cluster fdh-fastlane --service arn:aws:ecs:eu-west-1:092467779203:service/fdh-allocation-advisor --task-definition fdh-allocation-advisor:27  --force-new-deployment  --desired-count {}
         command("aws ecs update-service --cluster {} --service {} --task-definition {}  --force-new-deployment  --desired-count {} ".format(
             cluster, service_arn, task_definition, desired_count), args)
 elif args.ecs_compose_test:
