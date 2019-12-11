@@ -39,12 +39,17 @@ group.add_argument('--write_image_definitions', action='store_true')
 parser.add_argument('--debug', action='store_true')
 parser.add_argument('--dryrun', action='store_true')
 parser.add_argument('-p', nargs='+')
+parser.add_argument('--launch_from_current_directory', action='store_true')
 # must be used together with -p option
 parser.add_argument('--version')
 parser.add_argument('-f')
 args = parser.parse_args()
 datefmt = '%d-%b-%y %H:%M:%S'
 fmt = '[ECHO] %(message)s at %(asctime)s'
+if args.launch_from_current_directory:
+    path = ""
+else:
+    path = "../u../"
 if args.debug:
     logging.basicConfig(format=fmt, datefmt=datefmt, level=logging.DEBUG)
 else:
@@ -132,7 +137,7 @@ elif args.ecs_compose_test:
         name = "{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
-    command("../utilities/ecs-cli compose --cluster {} --project-name {} --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml create --tags 'Project=Fast Development'".format(cluster, service_name), args)
+    command("{}/utilities/ecs-cli compose --cluster {} --project-name {} --file ../docker-compose.yml --file ../docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml create --tags 'Project=Fast Development'".format(path, cluster, service_name), args)
 elif args.ecs_compose:
     # TODO add cluster, project name, remove --force-deployment, putting --timeout 0
     logging.info("Building ecs environment variables")
@@ -140,7 +145,7 @@ elif args.ecs_compose:
         name = "{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
-    command("../utilities/ecs-cli compose --verbose --file docker-compose.yml --file docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment", args)
+    command("{}utilities/ecs-cli compose --verbose --file docker-compose.yml --file docker-compose.aws.yml --file ../docker-compose.aws.deploy.yml --ecs-params ../ecs-params.yml service up  --force-deployment".format(path), args)
 
 elif args.write_image_definitions:
     image_repo = os.environ['image_repo']
