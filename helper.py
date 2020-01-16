@@ -128,7 +128,7 @@ elif args.create_or_update_service:
             cluster, service_name, task_definition, subnet, security_group, desired_count, auth_lb_target_groups), args)
     else:
         # updatetask_definition
-        command("aws ecs update-service --cluster {} --service {} --task-definition {}  --force-new-deployment  --desired-count {} --deployment-configuration={{maximumPercent=100,minimumHealthyPercent=0}}".format(
+        command("aws ecs update-service --cluster {} --service {} --task-definition {}  --force-new-deployment  --desired-count {} --deployment-configuration=maximumPercent=100,minimumHealthyPercent=0".format(
             cluster, service_arn, task_definition, desired_count), args)
 elif args.ecs_compose_test:
     cluster = os.environ['AWS_ECS_CLUSTER']
