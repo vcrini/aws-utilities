@@ -146,7 +146,7 @@ elif args.ecs_compose:
         name = "{}_VERSION".format(convert(x['name']))
         os.putenv(name, x['version'])
         logging.debug("{} -> {}".format(name, x['version']))
-    command("{0}utilities/ecs-cli compose --verbose --file docker-compose.yml --file docker-compose.aws.yml --file {0}docker-compose.aws.deploy.yml --ecs-params {0}ecs-params.yml service up  --force-deployment".format(path), args)
+    command("{0}utilities/ecs-cli compose --verbose --file docker-compose.yml --file docker-compose.aws.yml --file {0}docker-compose.aws.deploy.yml --ecs-params {0}ecs-params.yml service up  --deployment-max-percent 100 --deployment-min-healthy-percent 0 --force-deployment".format(path), args)
 
 elif args.write_image_definitions:
     image_repo = os.environ['image_repo']
