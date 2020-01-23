@@ -49,7 +49,7 @@ fmt = '[ECHO] %(message)s at %(asctime)s'
 if args.launch_from_current_directory:
     path = ""
 else:
-    path = "../u../"
+    path = "../../"
 if args.debug:
     logging.basicConfig(format=fmt, datefmt=datefmt, level=logging.DEBUG)
 else:
