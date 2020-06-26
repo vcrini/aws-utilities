@@ -15,9 +15,7 @@ if echo $app_image_version | grep -iq snapshot; then
   app_repo=$image_repo$application_name-snapshot
 else
   app_repo=$image_repo$application_name
-  if ! utilities/find-ecr-image.sh $application_name $app_image_version; then
-    echo "OK -> ECR image not present"
-  else
+  if utilities/find-ecr-image.sh $application_name $app_image_version >/dev/null; then
     echo "KO -> ECR image present but it's marked as immutable ... exiting"
     exit 1
   fi
