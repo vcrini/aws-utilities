@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 # Example:
 #    ./ecr_image_check.sh image_repo application_name version
@@ -12,7 +11,7 @@ image_repo=$1
 application_name=$2
 app_image_version=$3
 
-if echo $app_image_version | grep -i snapshot; then
+if echo $app_image_version | grep -iq snapshot; then
   app_repo=$image_repo$application_name-snapshot
 else
   app_repo=$image_repo$application_name
