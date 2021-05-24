@@ -13,6 +13,10 @@ def convert(string):
     return string.upper().replace('-', '_')
 
 
+def remove_spaces(string):
+    return string.replace(" ", "")
+
+
 def command(command, args, exit_on_error=True):
     logging.info("Launching " + command)
     returncode = 0
@@ -121,8 +125,8 @@ elif args.create_or_update_service:
     # if 1 == 1 or (len(service) != 0 and service[0]['status'] == 'INACTIVE'):
     if len(service) == 0 or (len(service) != 0 and service[0]['status'] == 'INACTIVE'):
         service_name = os.environ['AWS_SERVICE_NAME']
-        subnet = os.environ['AWS_SUBNET']
-        security_group = os.environ['AWS_SECURITY_GROUP']
+        subnet = remove_spaces(os.environ['AWS_SUBNET'])
+        security_group = remove_spaces(os.environ['AWS_SECURITY_GROUP'])
         auth_lb_target_groups = os.environ['AWS_AUTH_LB_TARGET_GROUPS']
         command("aws ecs create-service --cluster {} --service-name {} --task-definition {} --launch-type EC2 --network-configuration awsvpcConfiguration={{subnets={},securityGroups={}}} --desired-count {} --load-balancers {} ".format(
             cluster, service_name, task_definition, subnet, security_group, desired_count, auth_lb_target_groups), args)
