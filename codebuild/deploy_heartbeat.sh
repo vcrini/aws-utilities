@@ -42,10 +42,8 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
       CMD="aws ecs update-service --no-cli-pager --cluster $AWS_ECS_CLUSTER --service $AWS_SERVICE_NAME$version_count --task-definition $task_definition"
       echo "applying task definition"
       echo $CMD
-      echo ".2.1"
-      aws --version
       echo ".2.2"
-      $(bash -c "$CMD")
+      eval "$CMD"
       echo ".2.3"
    fi
 fi
