@@ -12,12 +12,13 @@ for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr ${ecr_repositories[$i]}:"
   pwd
-  ls -l utilities/ecr_images_check.sh
+  echo "now"
+  ls -l utilities/ecr_image_check.sh
   ls -l 
   ls -l utilities/
-  repo=$("utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version")
+  repo=$("../../utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version")
   echo "repo->$repo"
-  image_version=$("utilities/remove_snapshot.sh $app_image_version")
+  image_version=$("../../utilities/remove_snapshot.sh $app_image_version")
   echo "image_version->$image_version"
   repo=$repo:$app_image_version
   echo "repo->$repo"
