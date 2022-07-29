@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 #  build:
-echo "[ECHO] deploying STEP at $(date)"
-export ecr_repositories=(%{ for r in ecr_repositories ~}'${r}' %{ endfor ~})
+#creating dynamically an array from string
+IFS=',' read -r -a ecr_repositories <<< "$ecr"
 tag=`cat tag`
-git clone https://github.com/vcrini/aws-utilities  -b 1.0   --depth=1 utilities
 app_image_version=`grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh`
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
@@ -52,8 +51,6 @@ echo $CMD
 desiredCount=$(bash -c "$CMD")
 echo "desiredCount= $desiredCount"
 echo "AWS_DESIRED_COUNT= $AWS_DESIRED_COUNT"
-
-|-
 if [ "$AWS_DESIRED_COUNT" -ne "$desiredCount" ]; then
    CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count service scale --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT $AWS_DESIRED_COUNT"
    echo $CMD
