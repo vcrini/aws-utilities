@@ -17,7 +17,7 @@ do
   ls -l utilities/
   repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version`
   echo "repo->$repo"
-  image_version=$("utilities/remove_snapshot.sh $app_image_version")
+  image_version=`utilities/remove_snapshot.sh $app_image_version`
   echo "image_version->$image_version"
   repo=$repo:$app_image_version
   echo "repo->$repo"
