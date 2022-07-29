@@ -2,7 +2,8 @@
 #  pre_build:
 #creating dynamically an array from string
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
-printenv
+echo "0.2 -> ${ecr_repositories[0]}"
+pwd
 aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
 docker login --username "$dockerhub_user" --password "$dockerhub_password"
 app_image_version=$(grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh)
