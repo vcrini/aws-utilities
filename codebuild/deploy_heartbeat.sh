@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #  build:
 #creating dynamically an array from string
-set -xe
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
 tag=`cat tag`
 app_image_version=`grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh`
