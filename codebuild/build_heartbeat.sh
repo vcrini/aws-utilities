@@ -4,7 +4,6 @@
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
 echo "0.2 -> ${ecr_repositories[0]}*"
 aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
-#docker login --username "$dockerhub_user" --password "$dockerhub_password"
 echo "$dockerhub_password" | docker login --username "$dockerhub_user" --password-stdin
 app_image_version=$(grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh)
 ecr_urls=()
@@ -16,7 +15,7 @@ do
   ls -l utilities/ecr_image_check.sh
   ls -l 
   ls -l utilities/
-  repo=$("./utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version")
+  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version`
   echo "repo->$repo"
   image_version=$("utilities/remove_snapshot.sh $app_image_version")
   echo "image_version->$image_version"
