@@ -4,6 +4,7 @@ echo "[ECHO] Running pre_build STEP at $(date)"
 git clone https://github.com/vcrini/aws-utilities  -b migration   --depth=1 utilities
 utilities/codebuild/test.sh
 #export ecr_repositories=(%{ for r in ecr_repositories ~}'${r}' %{ endfor ~})
+eval $ecr
 printenv
 aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
 docker login --username "$dockerhub_user" --password "$dockerhub_password"
