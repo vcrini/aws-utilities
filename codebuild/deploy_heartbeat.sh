@@ -16,7 +16,7 @@ do
   echo "repo->$repo"
   ecr_urls+=($repo)
 done
-export repo=$${ecr_urls[0]}
+export repo=${ecr_urls[0]}
 if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
    CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service up --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  --force-deployment --tags $tag"
    echo $CMD
