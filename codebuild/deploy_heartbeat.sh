@@ -28,7 +28,7 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
    echo "launching service creation"
    echo $CMD
    raw_output=$(bash -c "$CMD")
-   output=$(bash -c "$raw_output | grep -o idempotent | head -1")
+   output=$(bash -c "echo $raw_output | grep -o idempotent | head -1")
    echo ".1: output = $output"
    if [ "$output" = "idempotent" ]; then
       echo ".2"
