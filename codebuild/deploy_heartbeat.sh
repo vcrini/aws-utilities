@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #  build:
 #creating dynamically an array from string
+set -e
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
 tag=`cat tag`
 app_image_version=`grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh`
@@ -23,11 +24,12 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
    exec $CMD
    else
    #CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service create --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  --tags $tag | grep -o idempotent | head -1 || true"
-   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service create --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  --tags $tag "
+   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service create --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  --tags $tag || true"
    
    echo "launching service creation"
    echo $CMD
-   output=$(bash -c "$CMD")
+   raw_output=$(bash -c "$CMD")
+   output=$(bash -c "$raw_output | grep -o idempotent | head -1")
    echo ".1: output = $output"
    if [ "$output" = "idempotent" ]; then
       echo ".2"
