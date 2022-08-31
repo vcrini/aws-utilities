@@ -2,7 +2,7 @@
 #  build:
 #creating dynamically an array from string
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
-app_image_version=`grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh`
+app_image_version=v`grep -Po '(?<=^version := ")[^"]+' build.sbt`
 cd target/docker/stage
 tag=`cat tag`
 ecr_urls=()
