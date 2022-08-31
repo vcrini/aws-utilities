@@ -27,11 +27,11 @@ aws_cred=$aws_path/credentials
 sbt_path=/root/.sbt
 sbt_cred=$sbt_path/.s3credentials
 mkdir -p $aws_path $sbt_path
-echo "[default]\nregion=$s3_aws_default_region\noutput=json" > $aws_config
+printf "[default]\nregion=$s3_aws_default_region\noutput=json" > $aws_config
 cat $aws_config
-echo "[default]\naws_access_key_id=$s3_aws_access_key_id\naws_secret_access_key=$s3_sakey" > $aws_cred
+printf "[default]\naws_access_key_id=$s3_aws_access_key_id\naws_secret_access_key=$s3_sakey" > $aws_cred
 cat $aws_cred
-echo "roleArn=$s3_aws_role_arn" >  $sbt_cred
+printf "roleArn=$s3_aws_role_arn" >  $sbt_cred
 cat $sbt_cred 
 #docker run -v $( pwd ):$( pwd )  -v $aws_path:$aws_path -v /root/.m2:/root/.m2 -v /root/.sbt:/root/.sbt -v /root/.ivy2:/root/.ivy2 -w $( pwd ) -e sbt_opts $repo:$sbt_image_version sbt -no-colors -Denv=$environment $more_options clean docker:stage &&
 BUILDS=("docker run -v $( pwd ):$( pwd )  -v $aws_path:$aws_path -v /root/.m2:/root/.m2 -v /root/.sbt:/root/.sbt -v /root/.ivy2:/root/.ivy2 -w $( pwd ) -e sbt_opts hseeberger/scala-sbt:8u212_1.2.8_2.12.8  sbt -no-colors -Denv=$environment $more_options clean docker:stage && cd target/docker/stage/ && docker build -t ${ecr_urls[0]} --cache-from  ${ecr_urls[0]} .")
