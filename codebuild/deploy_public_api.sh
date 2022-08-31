@@ -4,6 +4,7 @@
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
 tag=`cat tag`
 app_image_version=`grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh`
+cd target/docker/stage
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
