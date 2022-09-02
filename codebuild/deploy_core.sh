@@ -17,7 +17,18 @@ do
   echo "repo->$repo"
   ecr_urls+=($repo)
 done
-export repo=${ecr_urls[0]}
+#extracting old name format for compatibility with the old and avoid need to change all docker-compose using 
+# nomenclature as ${app_repo}:${app_image_version} and ${proxy_repo}:${proxy_image_version}
+#scala app
+repo=${ecr_urls[0]}
+IFS=':' read -r -a repo_and_version <<< "$repo"
+export app_repo=${repo_and_version[0]}
+export app_image_version=${repo_and_version[1]}
+#rev proxy if present
+repo=${ecr_urls[1]}
+IFS=':' read -r -a repo_and_version <<< "$repo"
+export proxy_repo=${repo_and_version[0]}
+export proxy_image_version=${repo_and_version[1]}
 if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
    CMD="../../../utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service up --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  --force-deployment --tags $tag"
    echo $CMD
@@ -29,8 +40,6 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
    echo $CMD
    raw_output=$(bash -c "$CMD")
    output=$(echo $raw_output | grep -o idempotent | head -n1)
-   #output=$(bash -c "echo $raw_output | grep -o idempotent | head -1")
-   #output=$(bash -c "$filtered_output")
    echo ".1: output = $output"
    if [ "$output" = "idempotent" ]; then
       CMD="../../../utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml create --tags $tag | perl -ne 'print \$1 if /TaskDefinition=.([^\"]+)\"/'"

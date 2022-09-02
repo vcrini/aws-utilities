@@ -4,22 +4,23 @@
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
 aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
 echo "$dockerhub_password" | docker login --username "$dockerhub_user" --password-stdin
-app_image_version=v`grep -Po '(?<=^version := ")[^"]+' build.sbt`
+#app_image_version=v`grep -Po '(?<=^version := ")[^"]+' build.sbt`
+#proxy_image_version=v`grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt`
+version=(v`grep -Po '(?<=^version := ")[^"]+' build.sbt`  v`grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt`)
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr ${ecr_repositories[$i]}:"
-  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version`
+  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} ${version[$i]}`
   echo "repo->$repo"
-  image_version=`utilities/remove_snapshot.sh $app_image_version`
+  image_version=`utilities/remove_snapshot.sh ${version[$i]}`
   echo "image_version->$image_version"
-  repo=$repo:$app_image_version
+  repo=$repo${version[$i]}:
   echo "repo->$repo"
   ecr_urls+=("$repo")
   docker pull "$repo" || true
 done
 export ecr_urls
-#docker run -it --rm hseeberger/scala-sbt:8u212_1.2.8_2.12.8 bash
 echo "[ECHO] Running using sbt publish to compile STEP at $(date)"
 aws_path=/root/.aws
 aws_config=$aws_path/config
@@ -33,8 +34,9 @@ printf "[default]\naws_access_key_id=$s3_aws_access_key_id\naws_secret_access_ke
 cat $aws_cred
 printf "roleArn=$s3_aws_role_arn" >  $sbt_cred
 cat $sbt_cred 
-BUILDS=("docker run -v $( pwd ):$( pwd )  -v $aws_path:$aws_path -v /root/.m2:/root/.m2 -v /root/.sbt:/root/.sbt -v /root/.ivy2:/root/.ivy2 -w $( pwd ) -e sbt_opts hseeberger/scala-sbt:8u212_1.2.8_2.12.8  sbt -no-colors -Denv=$environment $more_options clean docker:stage && cd target/docker/stage/ && docker build -t ${ecr_urls[0]} --cache-from  ${ecr_urls[0]} .")
-for ((i=0; i<${#BUILDS[@]}; i++))
+BUILDS=("docker run -v $( pwd ):$( pwd )  -v $aws_path:$aws_path -v /root/.m2:/root/.m2 -v /root/.sbt:/root/.sbt -v /root/.ivy2:/root/.ivy2 -w $( pwd ) -e sbt_opts hseeberger/scala-sbt:8u212_1.2.8_2.12.8  sbt -no-colors -Denv=$environment $more_options clean docker:stage && cd target/docker/stage/ && docker build -t ${ecr_urls[0]} --cache-from  ${ecr_urls[0]} ." "docker build -t  ${ecr_urls[1]} --cache-from ${ecr_urls[1]} -f Dockerfile.httpd .")
+#cycling again on ecr repositories so if a single repo is given revproxy section is skipped
+for ((i=0; i<${#ecr_repositories[@]}; i++))
 do 
   echo "${BUILDS[$i]}"
   eval "${BUILDS[$i]}" 
@@ -51,5 +53,11 @@ done
 
 help1="paste following content in 'imagedefinitions.json' inside repository '%s' if not present\n" 
 echo "$help1"
-printf '[{"name":"app","imageUri":"%s"}]' "${ecr_urls[0]}"| python -m json.tool
+if [ ${#ecr_repositories[@]} -ge 1 ]
+  then
+    printf '[{"name":"app","imageUri":"%s"},{"name":"revproxy","imageUri":"%s"}]' "${ecr_urls[0]}"  "${ecr_urls[1]}" | python -m json.tool
+  else 
+    printf '[{"name":"app","imageUri":"%s"}]' "${ecr_urls[0]}"| python -m json.tool
+fi
+artifacts:
 printf 'app=%s' "${ecr_urls[0]}" > tag
