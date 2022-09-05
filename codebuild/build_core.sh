@@ -16,7 +16,7 @@ do
   echo "repo->$repo"
   image_version=`utilities/remove_snapshot.sh ${version[$i]}`
   echo "image_version->$image_version"
-  repo=$repo${version[$i]}:
+  repo=$repo:${version[$i]}
   echo "repo->$repo"
   ecr_urls+=("$repo")
   docker pull "$repo" || true
