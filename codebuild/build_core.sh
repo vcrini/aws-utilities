@@ -54,11 +54,10 @@ done
 
 help1="paste following content in 'imagedefinitions.json' inside repository '%s' if not present\n" 
 echo "$help1"
-if [ ${#ecr_repositories[@]} -ge 1 ]
+if [ ${#ecr_repositories[@]} -gt 1 ]
   then
-    printf '[{"name":"app","imageUri":"%s"},{"name":"revproxy","imageUri":"%s"}]' "${ecr_urls[0]}"  "${ecr_urls[1]}" | python -m json.tool
+    printf '[{"name":"app","imageUri":"%s"},{"name":"revproxy","imageUri":"%s"}]' "${ecr_urls[0]}" "${ecr_urls[1]}" | python -m json.tool
   else 
     printf '[{"name":"app","imageUri":"%s"}]' "${ecr_urls[0]}"| python -m json.tool
 fi
-artifacts:
 printf 'app=%s' "${ecr_urls[0]}" > tag
