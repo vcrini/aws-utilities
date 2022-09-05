@@ -2,18 +2,19 @@
 #  build:
 #creating dynamically an array from string
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
-app_image_version=v`grep -Po '(?<=^version := ")[^"]+' build.sbt`
+version=(v`grep -Po '(?<=^version := ")[^"]+' build.sbt`  v`grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt`)
 cd target/docker/stage
 tag=`cat tag`
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
-  echo "ecr ${ecr_repositories[$i]}:"
-  repo=`../../../utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version`
+  echo "ecr: ${ecr_repositories[$i]}"
+  echo "version: ${version[$i]}"
+  repo=`../../../utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} ${version[$i]}`
   echo "repo->$repo"
-  image_version=`../../../utilities/remove_snapshot.sh $app_image_version` 
+  image_version=`../../../utilities/remove_snapshot.sh ${version[$i]}` 
   echo "image_version->$image_version"
-  repo=$repo:$app_image_version
+  repo=$repo${version[$i]}:
   echo "repo->$repo"
   ecr_urls+=($repo)
 done
