@@ -10,7 +10,8 @@ version=(v`grep -Po '(?<=^version := ")[^"]+' build.sbt`  v`grep -Po '(?<=^proxy
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
-  echo "ecr ${ecr_repositories[$i]}:"
+  echo "ecr: ${ecr_repositories[$i]}"
+  echo "version: ${version[$i]}"
   repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} ${version[$i]}`
   echo "repo->$repo"
   image_version=`utilities/remove_snapshot.sh ${version[$i]}`
