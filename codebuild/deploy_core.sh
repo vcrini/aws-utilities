@@ -5,7 +5,7 @@ IFS=';' read -r -a tg <<< "$target_group_ecs_cli_string"
 target_group="${tg[@]/#/--target-groups }"
 echo "target_group: $target_group"
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
-version=(v`grep -Po '(?<=^version := ")[^"]+' build.sbt`  v`grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt`)
+version=(v`grep -Po '(?<=^version := ")[^"]+' build.sbt`  v`grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt||true`)
 cd target/docker/stage
 tag=`cat tag`
 ecr_urls=()
