@@ -35,11 +35,11 @@ echo "[ECHO] Running post_build STEP at $(date)"
 echo "${ecr_urls[0]}"
 for ((i=0; i<${#ecr_urls[@]}; i++))
 do 
- echo "[ECHO] Docker push image $${ecr_urls[$i]}"
+ echo "[ECHO] Docker push image ${ecr_urls[$i]}"
  docker push "${ecr_urls[$i]}"
 done 
 
 help1="paste following content in 'imagedefinitions.json' inside repository '%s' if not present\n" 
 echo "$help1"
-printf '[{"name":"app","imageUri":"%s"},{"name":"web","imageUri":"%s"},{"name":"crono","imageUri":"%s"},{"name":"frontend","imageUri":"%s"}]' $${ecr_urls[0]} $${ecr_urls[1]} $${ecr_urls[2]} $${ecr_urls[3]} | python -m json.tool
-printf 'app=%s' "${ecr_urls[1]}" > tag
+printf '[{"name":"app","imageUri":"%s"},{"name":"web","imageUri":"%s"},{"name":"crono","imageUri":"%s"},{"name":"frontend","imageUri":"%s"}]' ${ecr_urls[0]} ${ecr_urls[1]} ${ecr_urls[2]} ${ecr_urls[3]} | python -m json.tool
+printf 'app=%s' "${ecr_urls[0]}" > tag
