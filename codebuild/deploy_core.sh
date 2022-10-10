@@ -37,6 +37,7 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
    CMD="../../../utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service up --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --force-deployment --tags $tag"
    echo $CMD
    exec $CMD
+   echo "(0)"
    else
    CMD="../../../utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service create --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --tags $tag || true"
    
@@ -55,7 +56,9 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
       echo $CMD
       eval "$CMD"
    fi
+echo "(1)"
 fi
+echo "(2)"
 CMD="aws ecs describe-services  --cluster $AWS_ECS_CLUSTER  --services $AWS_SERVICE_NAME | jq '.services[0].desiredCount'"
 echo $CMD
 desiredCount=$(bash -c "$CMD")
