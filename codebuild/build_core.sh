@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #  pre_build:
 #creating dynamically an array from string
+echo "sbt_opts is '$sbt_opts'"
+printenv
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
 aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
 echo "$dockerhub_password" | docker login --username "$dockerhub_user" --password-stdin
