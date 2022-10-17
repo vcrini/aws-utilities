@@ -7,7 +7,7 @@ aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --user
 echo "$dockerhub_password" | docker login --username "$dockerhub_user" --password-stdin
 #app_image_version=v`grep -Po '(?<=^version := ")[^"]+' build.sbt`
 #proxy_image_version=v`grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt`
-sbt_repo="$image_repo$image_repo_name:0.1"
+sbt_repo="${image_repo}bitgdi_sbt:0.1"
 docker pull $sbt_repo 
 version=(v`grep -Po '(?<=^version := ")[^"]+' build.sbt`  v`grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt||true`)
 ecr_urls=()
