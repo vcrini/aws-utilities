@@ -8,7 +8,7 @@ ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr ${ecr_repositories[$i]}:"
-  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version`
+  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version skip_ecr_check`
   echo "repo->$repo"
   image_version=`utilities/remove_snapshot.sh $app_image_version` 
   echo "image_version->$image_version"
