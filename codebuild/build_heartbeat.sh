@@ -2,6 +2,8 @@
 #  pre_build:
 #creating dynamically an array from string
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
+IFS=',' read -r -a dpath <<< "$dockerfile_path"
+IFS=',' read -r -a dcontext <<< "$dockerfile_context"
 aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
 echo "$dockerhub_password" | docker login --username "$dockerhub_user" --password-stdin
 app_image_version=$(grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh)
@@ -20,9 +22,9 @@ do
 done
 export ecr_urls
 
-BUILDS=("docker build -t ${ecr_urls[0]} --cache-from  ${ecr_urls[0]} --build-arg environment .")
-for ((i=0; i<${#BUILDS[@]}; i++))
+for ((i=0; i<${#ecr_repositories[@]}; i++))
 do 
+  BUILDS=("docker build -t ${ecr_urls[$i]} --cache-from  ${ecr_urls[$i]} --build-arg environment -f ${dpath[$i]} ${dcontext[$i]}")
   echo "${BUILDS[$i]}"
   eval "${BUILDS[$i]}" 
 done
