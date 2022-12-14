@@ -24,9 +24,9 @@ export ecr_urls
 
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do 
-  BUILDS=("docker build -t ${ecr_urls[$i]} --cache-from  ${ecr_urls[$i]} --build-arg environment -f ${dpath[$i]} ${dcontext[$i]}")
-  echo "${BUILDS[$i]}"
-  eval "${BUILDS[$i]}" 
+  BUILD="docker build -t ${ecr_urls[$i]} --cache-from  ${ecr_urls[$i]} --build-arg environment -f ${dpath[$i]} ${dcontext[$i]}"
+  echo "$BUILDS"
+  eval "$BUILDS" 
 done
 
 #\\  post_build:
