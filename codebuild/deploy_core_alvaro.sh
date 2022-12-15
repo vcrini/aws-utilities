@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #  build:
 #creating dynamically an array from string
+prefix=$(echo $AWS_STREAM_PREFIX | grep  -Eo '^[^-]*-' )
+echo "$prefix is $prefix"
 IFS=';' read -r -a tg <<< "$target_group_ecs_cli_string"
 target_group="${tg[@]/#/--target-groups }"
 echo "target_group: $target_group"
@@ -27,7 +29,7 @@ do
   repo=$repo:${version}
   echo "repo->$repo"
   ecr_urls+=($repo)
-  export  ${ecr_repositories[$i]}=$repo
+  export  ${ecr_repositories[$i]#$prefix}=$repo
   printenv
 done
 #extracting old name format for compatibility with the old and avoid need to change all docker-compose using 
