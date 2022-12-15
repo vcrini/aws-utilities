@@ -7,7 +7,7 @@ echo "target_group: $target_group"
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
 v=`grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh`
 #reading proxy version or take value from base image
-version=($v  `grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt || $v`)
+version=(`echo $v` `grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt || echo $v`)
 tag=`cat tag`
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
