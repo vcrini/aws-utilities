@@ -5,18 +5,26 @@ IFS=';' read -r -a tg <<< "$target_group_ecs_cli_string"
 target_group="${tg[@]/#/--target-groups }"
 echo "target_group: $target_group"
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
-version=(`grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh`  `grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt||true`)
+v=`grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh`
+#reading proxy version or take value from base image
+version=($v  `grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt || $v`)
 tag=`cat tag`
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr: ${ecr_repositories[$i]}"
-  echo "version: ${version[$i]}"
-  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} ${version[$i]}`
+  # if more than 2 repos then use first version for everyone after 2
+  if [ "$i" -gt "2" ]; then
+    version=${version[0]}
+  else 
+    version=${version[$i]}
+  fi
+  echo "version: ${version}"
+  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} ${version}`
   echo "repo->$repo"
-  image_version=`utilities/remove_snapshot.sh ${version[$i]}` 
+  image_version=`utilities/remove_snapshot.sh ${version}` 
   echo "image_version->$image_version"
-  repo=$repo:${version[$i]}
+  repo=$repo:${version}
   echo "repo->$repo"
   ecr_urls+=($repo)
 done
