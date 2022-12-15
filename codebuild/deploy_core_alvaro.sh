@@ -14,7 +14,7 @@ for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr: ${ecr_repositories[$i]}"
   # if more than 2 repos then use first version for everyone after 2
-  if [ "$i" -gt "2" ]; then
+  if [ "$i" -gt "1" ]; then
     version=${version[0]}
   else 
     version=${version[$i]}
