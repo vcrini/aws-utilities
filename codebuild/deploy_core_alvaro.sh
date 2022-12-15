@@ -27,6 +27,8 @@ do
   repo=$repo:${version}
   echo "repo->$repo"
   ecr_urls+=($repo)
+  export  ${ecr_repositories[$i]}=$repo
+  printenv
 done
 #extracting old name format for compatibility with the old and avoid need to change all docker-compose using 
 # nomenclature as ${app_repo}:${app_image_version} and ${proxy_repo}:${proxy_image_version}
