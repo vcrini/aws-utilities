@@ -30,8 +30,8 @@ do
   echo "repo->$repo"
   ecr_urls+=($repo)
   export  ${ecr_repositories[$i]#$prefix}=$repo
-  printenv
 done
+printenv
 #extracting old name format for compatibility with the old and avoid need to change all docker-compose using 
 # nomenclature as ${app_repo}:${app_image_version} and ${proxy_repo}:${proxy_image_version}
 #scala app
