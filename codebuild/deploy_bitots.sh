@@ -50,7 +50,7 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
       echo "creating new task definition"
       task_definition=$(bash -c "$CMD")
       echo "task_definition is $task_definition"
-      CMD="aws ecs update-service --no-cli-pager --cluster $AWS_ECS_CLUSTER --service $AWS_SERVICE_NAME$version_count --task-definition $task_definition"
+      CMD="aws ecs update-service --no-cli-pager --cluster $AWS_ECS_CLUSTER --service $AWS_SERVICE_NAME$version_count --task-definition $task_definition --enable-execute-command --force-new-deployment"
       echo "applying task definition"
       echo $CMD
       eval "$CMD"
