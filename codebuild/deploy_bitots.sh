@@ -2,23 +2,23 @@
 #  build:
 #creating dynamically an array from string
 IFS=';' read -r -a tg <<< "$target_group_ecs_cli_string"
-target_group="${tg[@]/#/--target-groups }"
+target_group="${tg[*]/#/--target-groups }"
 echo "target_group: $target_group"
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
-app_image_version=v`grep -Po '(?<=^version=).+' build.txt`
-tag=`cat tag`
+app_image_version=$(grep -Po '(?<=^version=).+' build.txt)
+tag=$(cat tag)
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr: ${ecr_repositories[$i]}"
   echo "version: $app_image_version"
-  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version`
+  repo=$("utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version")
   echo "repo->$repo"
-  image_version=`utilities/remove_snapshot.sh $app_image_version` 
+  image_version=$("utilities/remove_snapshot.sh $app_image_version") 
   echo "image_version->$image_version"
   repo=$repo:$app_image_version
   echo "repo->$repo"
-  ecr_urls+=($repo)
+  ecr_urls+=("$repo")
 done
 #extracting old name format for compatibility with the old and avoid need to change all docker-compose using 
 # nomenclature as ${app_repo}:${app_image_version} and ${proxy_repo}:${proxy_image_version}
@@ -44,7 +44,7 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
    echo "service creation"
    echo "$CMD"
    raw_output=$(bash -c "$CMD")
-   output=$(echo $raw_output | grep -o idempotent | head -n1)
+   output=$("echo $raw_output | grep -o idempotent | head -n1")
    if [ "$output" = "idempotent" ]; then
       CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml create --tags $tag | perl -ne 'print \$1 if /TaskDefinition=.([^\"]+)\"/'"
       echo "$CMD"
@@ -62,7 +62,7 @@ echo "enabling execute command"
 echo "$CMD"
 eval "$CMD"
 CMD="aws ecs describe-services  --cluster $AWS_ECS_CLUSTER  --services $AWS_SERVICE_NAME | jq '.services[0].desiredCount'"
-echo $CMD
+echo "$CMD"
 desiredCount=$(bash -c "$CMD")
 echo "desiredCount= $desiredCount"
 echo "AWS_DESIRED_COUNT= $AWS_DESIRED_COUNT"
