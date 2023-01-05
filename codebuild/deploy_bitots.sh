@@ -12,9 +12,9 @@ for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr: ${ecr_repositories[$i]}"
   echo "version: $app_image_version"
-  repo=$(utilities/ecr_image_check.sh "$image_repo" "${ecr_repositories[$i]}" "$app_image_version")
+  repo=$("utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version")
   echo "repo->$repo"
-  image_version=$(utilities/remove_snapshot.sh "$app_image_version") 
+  image_version=$("utilities/remove_snapshot.sh $app_image_version") 
   echo "image_version->$image_version"
   repo=$repo:$app_image_version
   echo "repo->$repo"
@@ -44,7 +44,7 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
    echo "service creation"
    echo "$CMD"
    raw_output=$(bash -c "$CMD")
-   output=$(echo "$raw_output" | grep -o idempotent | head -n1)
+   output=$("echo $raw_output | grep -o idempotent | head -n1")
    if [ "$output" = "idempotent" ]; then
       CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml create --tags $tag | perl -ne 'print \$1 if /TaskDefinition=.([^\"]+)\"/'"
       echo "$CMD"
