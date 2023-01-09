@@ -6,7 +6,7 @@ target_group="${tg[*]/#/--target-groups }"
 echo "target_group: $target_group"
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
 app_image_version=$(grep -Po '(?<=^version=).+' build.txt)
-tag=$(cat tag)
+tag=`cat tag`
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
