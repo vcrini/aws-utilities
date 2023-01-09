@@ -5,8 +5,8 @@ IFS=';' read -r -a tg <<< "$target_group_ecs_cli_string"
 target_group="${tg[*]/#/--target-groups }"
 echo "target_group: $target_group"
 IFS=',' read -r -a ecr_repositories <<< "$ecr"
-app_image_version=v`grep -Po '(?<=^version=).+' build.txt`
-tag=`cat tag`
+app_image_version=$(grep -Po '(?<=^version=).+' build.txt)
+tag=$(cat tag)
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
