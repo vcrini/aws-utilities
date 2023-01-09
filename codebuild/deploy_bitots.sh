@@ -34,30 +34,30 @@ echo "crono -> $crono"
 echo "frontend -> $frontend"
 
 if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
-   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service up --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --force-deployment --tags $tag --launch-type FARGATE" 
+   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service up --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --force-deployment --tags $tag --launch-type FARGATE" 
    echo "service creation + starting"
    echo "$CMD"
    eval "$CMD"
    else
-   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service create --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --tags $tag || true"
+   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service create --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --tags $tag || true"
    
    echo "service creation"
    echo "$CMD"
    raw_output=$(bash -c "$CMD")
    output=$(echo "$raw_output" | grep -o idempotent | head -n1)
    if [ "$output" = "idempotent" ]; then
-      CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml create --tags $tag | perl -ne 'print \$1 if /TaskDefinition=.([^\"]+)\"/'"
+      CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml create --tags $tag | perl -ne 'print \$1 if /TaskDefinition=.([^\"]+)\"/'"
       echo "$CMD"
       echo "creating new task definition"
       task_definition=$(bash -c "$CMD")
       echo "task_definition is $task_definition"
-      CMD="aws ecs update-service --no-cli-pager --cluster $AWS_ECS_CLUSTER --service $AWS_SERVICE_NAME$version_count --task-definition $task_definition"
+      CMD="aws ecs update-service --no-cli-pager --cluster $AWS_ECS_CLUSTER --service $AWS_SERVICE_NAME --task-definition $task_definition"
       echo "applying task definition"
       echo "$CMD"
       eval "$CMD"
    fi
 fi
-CMD="aws ecs update-service --no-cli-pager --cluster $AWS_ECS_CLUSTER --service $AWS_SERVICE_NAME$version_count --enable-execute-command --force-new-deployment"
+CMD="aws ecs update-service --no-cli-pager --cluster $AWS_ECS_CLUSTER --service $AWS_SERVICE_NAME --enable-execute-command --force-new-deployment"
 echo "enabling execute command"
 echo "$CMD"
 eval "$CMD"
@@ -67,7 +67,7 @@ desiredCount=$(bash -c "$CMD")
 echo "desiredCount= $desiredCount"
 echo "AWS_DESIRED_COUNT= $AWS_DESIRED_COUNT"
 if [ "$AWS_DESIRED_COUNT" -ne "$desiredCount" ]; then
-   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count service scale --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT $AWS_DESIRED_COUNT"
+   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME service scale --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT $AWS_DESIRED_COUNT"
    echo "$CMD"
    eval "$CMD"
 fi
