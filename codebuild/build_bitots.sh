@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 #  pre_build:
 #creating dynamically an array from string
-IFS=',' read -r -a ecr_repositories <<< "$ecr"
-aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
-echo "$dockerhub_password" | docker login --username "$dockerhub_user" --password-stdin
-app_image_version=v`grep -Po '(?<=^version=).+' build.txt`
+IFS=',' read -r -a ecr_repositories <<< "$ECR"
+aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USER" --password-stdin
+app_image_version=$(grep -Po '(?<=^version=).+' build.txt)
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr: ${ecr_repositories[$i]}"
   echo "version: $app_image_version"
-  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version`
+  repo=$(utilities/ecr_image_check.sh "$IMAGE_REPO" "${ecr_repositories[$i]}" "$app_image_version")
   echo "repo->$repo"
-  image_version=`utilities/remove_snapshot.sh $app_image_version`
+  image_version=$(utilities/remove_snapshot.sh "$app_image_version")
   echo "image_version->$image_version"
   repo=$repo:$app_image_version
   echo "repo->$repo"
