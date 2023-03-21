@@ -21,6 +21,7 @@ do
   ecr_urls+=("$repo")
   docker pull "$repo" || true
   # checking for vulnerabilities
+  docker --version
   docker scan "$repo" || true
    
 done
