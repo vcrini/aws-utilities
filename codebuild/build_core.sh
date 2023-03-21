@@ -20,6 +20,9 @@ do
   echo "repo->$repo"
   ecr_urls+=("$repo")
   docker pull "$repo" || true
+  # checking for vulnerabilities
+  docker scout cves "$repo" || true
+   
 done
 export ecr_urls
 echo "[ECHO] Running using sbt publish to compile STEP at $(date)"
