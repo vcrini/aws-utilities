@@ -21,7 +21,7 @@ do
   ecr_urls+=("$repo")
   docker pull "$repo" || true
   # checking for vulnerabilities
-  docker scout cves "$repo" || true
+  docker scan "$repo" || true
    
 done
 export ecr_urls
