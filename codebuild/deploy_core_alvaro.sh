@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #  build:
 #creating dynamically an array from string
+IFS=';' read -r -a dockercompose_path <<< "$DOCKERCOMPOSE_PATH"
 prefix=$(echo $AWS_STREAM_PREFIX | grep  -Eo '^[^-]*-' )
 echo "$prefix is $prefix"
 IFS=';' read -r -a tg <<< "$target_group_ecs_cli_string"
@@ -45,19 +46,19 @@ IFS=':' read -r -a repo_and_version <<< "$repo"
 export proxy_repo=${repo_and_version[0]}
 export proxy_image_version=${repo_and_version[1]}
 if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
-   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service up --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --force-deployment --tags $tag"
+   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file $dockercompose_path/docker-compose.yml --file $dockercompose_path/docker-compose.aws.yml --ecs-params $dockercompose_path/ecs-params.yml service up --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --force-deployment --tags $tag"
    echo $CMD
    service_up=$(bash -c "$CMD")
    echo "service_up result is $service_up"
    else
-   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml service create --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --tags $tag || true"
+   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file $dockercompose_path/docker-compose.yml --file $dockercompose_path/docker-compose.aws.yml --ecs-params $dockercompose_path/ecs-params.yml service create --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --tags $tag || true"
    
    echo "launching service creation"
    echo $CMD
    raw_output=$(bash -c "$CMD")
    output=$(echo $raw_output | grep -o idempotent | head -n1)
    if [ "$output" = "idempotent" ]; then
-      CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file docker-compose.yml --file docker-compose.aws.yml --ecs-params ecs-params.yml create --tags $tag | perl -ne 'print \$1 if /TaskDefinition=.([^\"]+)\"/'"
+      CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME$version_count --file $dockercompose_path/docker-compose.yml --file $dockercompose_path/docker-compose.aws.yml --ecs-params $dockercompose_path/ecs-params.yml create --tags $tag | perl -ne 'print \$1 if /TaskDefinition=.([^\"]+)\"/'"
       echo $CMD
       echo "creating new task definition"
       task_definition=$(bash -c "$CMD")
