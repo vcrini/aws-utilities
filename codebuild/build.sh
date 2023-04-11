@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
 #  pre_build:
 #creating dynamically an array from string
-IFS=',' read -r -a ecr_repositories <<< "$ecr"
-IFS=',' read -r -a dpath <<< "$dockerfile_path"
-IFS=',' read -r -a dcontext <<< "$dockerfile_context"
-aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$account_id.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
-echo "$dockerhub_password" | docker login --username "$dockerhub_user" --password-stdin
+printenv
+IFS=',' read -r -a ecr_repositories <<< "$ECR"
+IFS=',' read -r -a dpath <<< "$DOCKERFILE_PATH"
+IFS=',' read -r -a dcontext <<< "$DOCKERFILE_CONTEXT"
+aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USER" --password-stdin
 app_image_version=$(grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh)
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr ${ecr_repositories[$i]}:"
-  repo=`utilities/ecr_image_check.sh $image_repo ${ecr_repositories[$i]} $app_image_version`
+  repo=$(utilities/ecr_image_check.sh "$IMAGE_REPO" "${ecr_repositories[$i]}" "$app_image_version")
   echo "repo->$repo"
-  image_version=`utilities/remove_snapshot.sh $app_image_version`
+  image_version=$(utilities/remove_snapshot.sh "$app_image_version")
   echo "image_version->$image_version"
   repo=$repo:$app_image_version
   echo "repo->$repo"
