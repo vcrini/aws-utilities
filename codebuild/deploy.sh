@@ -46,7 +46,7 @@ IFS=':' read -r -a repo_and_version <<< "$repo"
 export proxy_repo=${repo_and_version[0]}
 export proxy_image_version=${repo_and_version[1]}
 if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
-   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME --file $DOCKER_COMPOSE_PATH/docker-compose.yml --file $DOCKER_COMPOSE_PATH/docker-compose.aws.yml --ecs-params $DOCKER_COMPOSE_PATH/ecs-params.yml service up --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --force-deployment --tags $tag"
+   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME --file $DOCKER_COMPOSE_PATH/docker-compose.yml --file $DOCKER_COMPOSE_PATH/docker-compose.aws.yml --ecs-params $DOCKER_COMPOSE_PATH/ecs-params.yml service up --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  $target_group --force-deployment --tags $tag $LAUNCH_TYPE"
    echo "$CMD"
    service_up=$(bash -c "$CMD")
    echo "service_up result is $service_up"
