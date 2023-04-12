@@ -29,7 +29,8 @@ do
   repo=$repo:${ver}
   echo "repo->$repo"
   ecr_urls+=("$repo")
-  export  "${ecr_repositories[$i]#$prefix}"="$repo"
+  #removing prefix and substituting '-' with '_'
+  export  "$(echo "${ecr_repositories[$i]#$prefix}"| tr - _)"="$repo"
 done
 printenv
 #extracting old name format for compatibility with the old and avoid need to change all docker-compose using 
