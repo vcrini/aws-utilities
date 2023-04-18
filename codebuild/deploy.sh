@@ -69,6 +69,12 @@ if [ "$AWS_DESIRED_COUNT" -gt "0" ]; then
       eval "$CMD"
    fi
 fi
+if grep -qi "fargate" <<< "$LAUNCH_TYPE"; then
+   CMD="aws ecs update-service --no-cli-pager --cluster $AWS_ECS_CLUSTER --service $AWS_SERVICE_NAME --enable-execute-command --force-new-deployment"
+   echo "enabling execute command"
+   echo "$CMD"
+   eval "$CMD"
+fi
 CMD="aws ecs describe-services  --cluster $AWS_ECS_CLUSTER  --services $AWS_SERVICE_NAME | jq '.services[0].desiredCount'"
 echo "$CMD"
 desiredCount=$(bash -c "$CMD")
