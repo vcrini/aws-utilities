@@ -23,16 +23,9 @@ do
   docker pull "$repo" || true
 done
 export ecr_urls
-#if it's not a scala project, then S3_AWS_ACCESS_KEY_ID should not be defined
+#if it's a scala project, then S3_AWS_ACCESS_KEY_ID is defined
 if grep -q . <<< "$S3_AWS_ACCESS_KEY_ID"; then
-  for ((i=0; i<${#ecr_repositories[@]}; i++))
-  do 
-    BUILD="docker build -t ${ecr_urls[$i]} --cache-from  ${ecr_urls[$i]} --build-arg environment -f ${dpath[$i]} ${dcontext[$i]}"
-    echo "$BUILD"
-    eval "$BUILD" 
-  done
-# if is a scala project use scala image
-else
+  # if is a scala project use scala image
   echo "[ECHO] Running using sbt publish to compile STEP at $(date)"
   aws_path=/root/.aws
   aws_config=$aws_path/config
@@ -52,6 +45,14 @@ else
   do 
     echo "${BUILDS[$i]}"
     eval "${BUILDS[$i]}" 
+  done
+else
+  # otherwise no particular images are used
+  for ((i=0; i<${#ecr_repositories[@]}; i++))
+  do 
+    BUILD="docker build -t ${ecr_urls[$i]} --cache-from  ${ecr_urls[$i]} --build-arg environment -f ${dpath[$i]} ${dcontext[$i]}"
+    echo "$BUILD"
+    eval "$BUILD" 
   done
 fi
 
