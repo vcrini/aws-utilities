@@ -22,13 +22,37 @@ do
   docker pull "$repo" || true
 done
 export ecr_urls
-
-for ((i=0; i<${#ecr_repositories[@]}; i++))
-do 
-  BUILD="docker build -t ${ecr_urls[$i]} --cache-from  ${ecr_urls[$i]} --build-arg environment -f ${dpath[$i]} ${dcontext[$i]}"
-  echo "$BUILD"
-  eval "$BUILD" 
-done
+#if it's not a scala project, then S3_AWS_ACCESS_KEY_ID should not be defined
+if grep -q . <<< "$S3_AWS_ACCESS_KEY_ID"; then
+  for ((i=0; i<${#ecr_repositories[@]}; i++))
+  do 
+    BUILD="docker build -t ${ecr_urls[$i]} --cache-from  ${ecr_urls[$i]} --build-arg environment -f ${dpath[$i]} ${dcontext[$i]}"
+    echo "$BUILD"
+    eval "$BUILD" 
+  done
+# if is a scala project use scala image
+else
+  echo "[ECHO] Running using sbt publish to compile STEP at $(date)"
+  aws_path=/root/.aws
+  aws_config=$aws_path/config
+  aws_cred=$aws_path/credentials
+  sbt_path=/root/.sbt
+  sbt_cred=$sbt_path/.s3credentials
+  mkdir -p $aws_path $sbt_path
+  printf "[default]\nregion=%s\noutput=json" "$S3_AWS_DEFAULT_REGION" > $aws_config
+  cat $aws_config
+  printf "[default]\naws_access_key_id=%s\naws_secret_access_key=%s" "$S3_AWS_ACCESS_KEY_ID" "$S3_SAKEY" > $aws_cred
+  cat $aws_cred
+  printf "roleArn=%s" "$S3_AWS_ROLE_ARN">  $sbt_cred
+  cat $sbt_cred 
+  BUILDS=("docker run -v $( pwd ):$( pwd )  -v $aws_path:$aws_path -v /root/.m2:/root/.m2 -v /root/.sbt:/root/.sbt -v /root/.ivy2:/root/.ivy2 -w $( pwd ) -e SBT_OPTS hseeberger/scala-sbt:8u212_1.2.8_2.12.8  sbt -no-colors -Denv=$environment $more_options clean docker:stage && cd target/docker/stage/ && docker build -t ${ecr_urls[0]} --cache-from  ${ecr_urls[0]} ." "docker build -t  ${ecr_urls[1]} --cache-from ${ecr_urls[1]} -f Dockerfile.httpd .")
+  #cycling again on ecr repositories so if a single repo is given revproxy section is skipped
+  for ((i=0; i<${#ecr_repositories[@]}; i++))
+  do 
+    echo "${BUILDS[$i]}"
+    eval "${BUILDS[$i]}" 
+  done
+fi
 
 #\\  post_build:
 echo "[ECHO] Running post_build STEP at $(date)"
