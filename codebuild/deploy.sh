@@ -10,7 +10,7 @@ IFS=',' read -r -a ecr_repositories <<< "$ECR"
 v=$(grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh||grep -Po '(?<=^version := ")[^"]+' build.sbt)
 #reading proxy version or take value from base image
 version=("$v" "$(grep -Po '(?<=^proxy_version := ")[^"]+' proxy_version.txt || echo "$v")")
-tag=$(cat tag)
+tag=$(cat $DOCKER_COMPOSE_PATH/tag)
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
