@@ -7,7 +7,8 @@ IFS=',' read -r -a dpath <<< "$DOCKERFILE_PATH"
 IFS=',' read -r -a dcontext <<< "$DOCKERFILE_CONTEXT"
 aws ecr get-login-password  --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin  "$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
 echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USER" --password-stdin
-app_image_version=$(grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh)
+# testing before for a non scala version then for a scala
+app_image_version=$(grep -Po '(?<=^export IMAGE_TAG=).+$' build.sh||grep -Po '(?<=^version := ")[^"]+' build.sbt)
 ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
