@@ -83,7 +83,8 @@ echo "desiredCount= $desiredCount"
 echo "AWS_DESIRED_COUNT= $AWS_DESIRED_COUNT"
 if [ "$AWS_DESIRED_COUNT" -ne "$desiredCount" ]; then
    #CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME  --file $DOCKER_COMPOSE_PATH/docker-compose.yml --file $DOCKER_COMPOSE_PATH/docker-compose.aws.yml --ecs-params $DOCKER_COMPOSE_PATH/ecs-params.yml service scale --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT $AWS_DESIRED_COUNT --timeout 10"
-   CMD="utilities/ecs-cli compose service scale --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME  --file $DOCKER_COMPOSE_PATH/docker-compose.yml --file $DOCKER_COMPOSE_PATH/docker-compose.aws.yml --ecs-params $DOCKER_COMPOSE_PATH/ecs-params.yml --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  --timeout 10 $AWS_DESIRED_COUNT"
+   #CMD="utilities/ecs-cli compose service scale --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME  --file $DOCKER_COMPOSE_PATH/docker-compose.yml --file $DOCKER_COMPOSE_PATH/docker-compose.aws.yml --ecs-params $DOCKER_COMPOSE_PATH/ecs-params.yml --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT  --timeout 10 $AWS_DESIRED_COUNT"
+   CMD="utilities/ecs-cli compose --cluster $AWS_ECS_CLUSTER --project-name $AWS_SERVICE_NAME  --file $DOCKER_COMPOSE_PATH/docker-compose.yml --file $DOCKER_COMPOSE_PATH/docker-compose.aws.yml service scale --deployment-max-percent $DEPLOYMENT_MAX_PERCENT --deployment-min-healthy-percent $DEPLOYMENT_MIN_HEALTHY_PERCENT $AWS_DESIRED_COUNT --timeout 10"
    echo "$CMD"
    service_scale=$(bash -c "$CMD")
    echo "service scale output is $service_scale"
