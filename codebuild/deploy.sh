@@ -22,7 +22,7 @@ do
     ver=${version[$i]}
   fi
   echo "version: ${ver}"
-  repo=$(utilities/ecr_image_check.sh "$IMAGE_REPO" "${ecr_repositories[$i]}" "$ver")
+  repo=$(utilities/ecr_image_check.sh "$IMAGE_REPO" "${ecr_repositories[$i]}" "$ver" skip_ecr_check)
   echo "repo->$repo"
   image_version=$(utilities/remove_snapshot.sh "$ver") 
   echo "image_version->$image_version"
