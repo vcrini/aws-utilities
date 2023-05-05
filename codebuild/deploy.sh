@@ -15,12 +15,13 @@ ecr_urls=()
 for ((i=0; i<${#ecr_repositories[@]}; i++))
 do
   echo "ecr: ${ecr_repositories[$i]}"
-  # if more than 2 repos then use first version for everyone after 2
-  if [ "$i" -gt "1" ]; then
-    ver=${version[0]}
-  else 
-    ver=${version[$i]}
-  fi
+  ver=${version[0]}
+  ## if more than 2 repos then use first version for everyone after 2
+  #if [ "$i" -gt "1" ]; then
+  #  ver=${version[0]}
+  #else 
+  #  ver=${version[$i]}
+  #fi
   echo "version: ${ver}"
   repo=$(utilities/ecr_image_check.sh "$IMAGE_REPO" "${ecr_repositories[$i]}" "$ver" skip_ecr_check)
   echo "repo->$repo"
