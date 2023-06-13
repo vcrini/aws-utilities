@@ -69,8 +69,3 @@ help1="paste following content in 'imagedefinitions.json' inside repository '%s'
 echo "$help1"
 printf '[{"name":"app","imageUri":"%s"}]' "${ecr_urls[0]}"| python -m json.tool
 printf 'app=%s' "${ecr_urls[0]}" > "$DOCKER_COMPOSE_PATH/tag"
-ls -l $DOCKER_COMPOSE_PATH/tag || true
-cat $DOCKER_COMPOSE_PATH/tag || true
-ls -l $DOCKER_COMPOSE_PATH || true
-ls -l
-pwd
