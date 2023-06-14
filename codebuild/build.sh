@@ -39,7 +39,7 @@ if grep -q . <<< "$S3_AWS_ACCESS_KEY_ID"; then
   cat $aws_cred
   printf "roleArn=%s" "$S3_AWS_ROLE_ARN">  $sbt_cred
   cat $sbt_cred 
-  BUILDS=("docker run -v $( pwd ):$( pwd )  -v $aws_path:$aws_path -v /root/.m2:/root/.m2 -v /root/.sbt:/root/.sbt -v /root/.ivy2:/root/.ivy2 -w $( pwd ) -e SBT_OPTS hseeberger/scala-sbt:8u212_1.2.8_2.12.8  sbt -no-colors -Denv=$environment $more_options clean docker:stage && cd target/docker/stage/ && docker build -t ${ecr_urls[0]} --cache-from  ${ecr_urls[0]} . && cd -" "docker build -t  ${ecr_urls[1]} --cache-from ${ecr_urls[1]} -f Dockerfile.httpd .")
+  BUILDS=("docker run -v $( pwd ):$( pwd )  -v $aws_path:$aws_path -v /root/.m2:/root/.m2 -v /root/.sbt:/root/.sbt -v /root/.ivy2:/root/.ivy2 -w $( pwd ) -e SBT_OPTS hseeberger/scala-sbt:8u212_1.2.8_2.12.8  sbt -no-colors -Denv=$environment $more_options clean docker:stage && cd target/docker/stage/ && docker build -t ${ecr_urls[0]} --cache-from  ${ecr_urls[0]} . && cd -" "cd target/docker/stage/ && docker build -t  ${ecr_urls[1]} --cache-from ${ecr_urls[1]} -f Dockerfile.httpd . && cd -")
   #cycling again on ecr repositories so if a single repo is given revproxy section is skipped
   for ((i=0; i<${#ecr_repositories[@]}; i++))
   do 
