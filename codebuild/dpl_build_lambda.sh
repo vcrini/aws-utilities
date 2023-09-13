@@ -20,7 +20,7 @@ then
   aws lambda publish-layer-version  --layer-name bitdpl-test-ordsimalg --zip-file fileb://layer.zip  
 fi
 aws lambda update-function-configuration --function-name "$LAMBDA_NAME"  --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$LAMBDA_LAYER_1_VERSION" "$LAMBDA_LAYER_2:$put_layer_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE"
-aws lambda put-function-concurrency --function-name "$LAMBDA_NAME" --reserved-concurrency-executions "$LAMBDA_CONCURRENCY"
+aws lambda put-function-concurrency --function-name "$LAMBDA_NAME" --reserved-concurrent-executions "$LAMBDA_CONCURRENCY"
 aws lambda update-function-code --function-name "$LAMBDA_NAME" --zip-file fileb://lambda.zip --publish
 aws lambda list-event-source-mappings  --function-name "$LAMBDA_NAME"
 echo "end script"
