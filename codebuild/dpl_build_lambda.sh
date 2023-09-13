@@ -12,10 +12,11 @@ get_layer_version=$(echo "$get_function" | jq '.Configuration|.Layers|.[1]'| jq 
 echo "version found: $get_layer_version"
 put_layer_version=$(jq .version < config.json)
 echo "version requested: $put_layer_version"
-if [ "$get_layer_version" -eq "$put_layer_version" ] 
+if [ "$get_layer_version" -ne "$put_layer_version" ] 
 then
+  #if it fails does not return error code !=0 but fails publish
   sh build_layer.sh
-  echo "error code $?"
+  #echo "error code $?"
   aws lambda publish-layer-version  --layer-name bitdpl-test-ordsimalg --zip-file fileb://layer.zip  
 fi
 aws lambda update-function-configuration --function-name "$LAMBDA_NAME"  --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$LAMBDA_LAYER_1_VERSION" "$LAMBDA_LAYER_2:$put_layer_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE"
