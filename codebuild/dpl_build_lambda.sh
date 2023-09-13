@@ -8,14 +8,7 @@ sh build_lambda.sh
 #aws lambda create-function --function-name "$LAMBDA_NAME" --zip-file fileb://lambda.zip --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:38 arn:aws:lambda:eu-west-1:796341525871:layer:bitdpl-test-ordsimalg:2 
 #aws lambda get-layer-version  --layer-name bitdpl-test-ordsimalg --version-number 2
 get_function=$(aws lambda get-function  --function-name "$LAMBDA_NAME")
-echo ">1"
-echo "$get_function" | jq '.Layers|.[1]'
-echo ">2"
-echo "$get_function" | jq '.Layers|.[1]'| jq .Arn 
-echo ">3"
-echo "$get_function" | jq '.Layers|.[1]'| jq .Arn | perl -ne 'print "$1\n" if /:(\d+)\"/'
-echo ">4"
-get_layer_version=$(echo "$get_function" | jq '.Layers|.[1]'| jq .Arn | perl -ne 'print "$1\n" if /:(\d+)\"/')
+get_layer_version=$(echo "$get_function" | jq '.Configuration|.Layers|.[1]'| jq .Arn | perl -ne 'print "$1\n" if /:(\d+)\"/')
 echo "version found: $get_layer_version"
 put_layer_version=$(jq .version < config.json)
 echo "version requested: $put_layer_version"
