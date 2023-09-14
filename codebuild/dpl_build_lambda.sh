@@ -23,6 +23,8 @@ aws lambda update-function-configuration --function-name "$LAMBDA_NAME"  --handl
 #to put back asap permission problem is solved
 #aws lambda put-function-concurrency --function-name "$LAMBDA_NAME" --reserved-concurrent-executions "$LAMBDA_CONCURRENCY"
 aws lambda update-function-code --function-name "$LAMBDA_NAME" --zip-file fileb://lambda.zip --publish
-aws lambda list-event-source-mappings  --function-name "$LAMBDA_NAME"
+# ok
+#  aws lambda list-event-source-mappings  --function-name "$LAMBDA_NAME"
+aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn  $QUEUE
 echo "end script"
 
