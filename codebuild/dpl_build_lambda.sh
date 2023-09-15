@@ -4,12 +4,12 @@
 echo "start script"
 sh build_lambda.sh
 
-aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn  "$QUEUE"
-exit
+#aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn  "$QUEUE"
+#exit
 layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
 layer2_archive=fileb://layer.zip
 requested_layer_version=$(jq .version < config.json)
-get-layer-version --layer-name "$layer2_name" --version-number  "$requested_layer_version"
+get-layer-version --layer-name "$layer2_name" --version-number "$requested_layer_version"
 exit
 get_function=$(aws lambda get-function  --function-name "$LAMBDA_NAME")
 get_layer_version=$(echo "$get_function" | jq '.Configuration|.Layers|.[1]'| jq .Arn | perl -ne 'print "$1\n" if /:(\d+)\"/')
