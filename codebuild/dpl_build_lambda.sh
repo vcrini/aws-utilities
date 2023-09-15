@@ -20,11 +20,10 @@ then
   aws lambda publish-layer-version  --layer-name bitdpl-test-ordsimalg --zip-file fileb://layer.zip  
 fi
 aws lambda update-function-configuration --function-name "$LAMBDA_NAME"  --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$LAMBDA_LAYER_1_VERSION" "$LAMBDA_LAYER_2:$put_layer_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE"
-#to put back asap permission problem is solved
-#aws lambda put-function-concurrency --function-name "$LAMBDA_NAME" --reserved-concurrent-executions "$LAMBDA_CONCURRENCY"
+aws lambda put-function-concurrency --function-name "$LAMBDA_NAME" --reserved-concurrent-executions "$LAMBDA_CONCURRENCY"
 aws lambda update-function-code --function-name "$LAMBDA_NAME" --zip-file fileb://lambda.zip --publish
 # ok
-#  aws lambda list-event-source-mappings  --function-name "$LAMBDA_NAME"
 aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn  $QUEUE
+aws lambda list-event-source-mappings  --function-name "$LAMBDA_NAME"
 echo "end script"
 
