@@ -2,7 +2,6 @@
 #  pre_build:
 #creating dynamically an array from string
 echo "start script"
-aws --version
 sh build_lambda.sh
 layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
 layer2_archive=fileb://layer.zip
@@ -26,5 +25,6 @@ else
   aws lambda update-function-configuration --function-name "$LAMBDA_NAME"  --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$LAMBDA_LAYER_1_VERSION" "$LAMBDA_LAYER_2:$put_layer_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE"
   aws lambda update-function-code --function-name "$LAMBDA_NAME" --zip-file fileb://lambda.zip --publish
 fi
+aws lambda put-function-concurrency --function-name "$LAMBDA_NAME" --reserved-concurrent-executions "$LAMBDA_CONCURRENCY"
 echo "end script"
 
