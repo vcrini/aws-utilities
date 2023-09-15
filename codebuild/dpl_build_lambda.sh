@@ -3,6 +3,9 @@
 #creating dynamically an array from string
 echo "start script"
 sh build_lambda.sh
+
+aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn  "$QUEUE"
+exit
 layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
 layer2_archive=fileb://layer.zip
 requested_layer_version=$(jq .version < config.json)
