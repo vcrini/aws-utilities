@@ -30,7 +30,8 @@ else
 	aws lambda publish-layer-version --layer-name "$layer2_name" --zip-file "$layer2_archive"
 fi
 #exit
-#get_function=$(aws lambda get-function  --function-name "$LAMBDA_NAME")
+get_function=$(aws lambda get-function --function-name "$LAMBDA_NAME")
+exit
 #get_layer_version=$(echo "$get_function" | jq '.Configuration|.Layers|.[1]'| jq .Arn | perl -ne 'print "$1\n" if /:(\d+)\"/')
 #echo "version found: $get_layer_version"
 #put_layer_version=$(jq .version < config.json)
