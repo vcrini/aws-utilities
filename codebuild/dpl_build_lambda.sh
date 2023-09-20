@@ -9,7 +9,7 @@ function wait_lambda {
 	get_function=""
 	max_count=6
 	count=0
-	while [ "$get_function" != "ActiveSuccessful" ] || [ "$count" -lt "$max_count" ]; do
+	while [ "$get_function" != "ActiveSuccessful" ] && [ "$count" -lt "$max_count" ]; do
 		count=$((count = count + 1))
 		echo "$get_function"
 		get_function=$(aws lambda get-function --function-name "$LAMBDA_NAME" | jq -r '.Configuration|[.State,.LastUpdateStatus]|join("")')
