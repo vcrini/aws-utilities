@@ -8,8 +8,8 @@ function wait_lambda {
 	get_function=""
 	while [ "$get_function" != "Successful" ]; do
 		echo "$get_function"
-		get_function=$(aws lambda get-function --function-name "$LAMBDA_NAME" --query 'Configuration.[LastUpdateStatus]')
-		sleep 5
+		get_function=$(aws lambda get-function --function-name "$LAMBDA_NAME" --query 'Configuration.LastUpdateStatus')
+		sleep 10
 	done
 }
 
