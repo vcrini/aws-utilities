@@ -20,15 +20,16 @@ layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
 layer2_archive=fileb://$parent_directory/lambda_layer.zip
 lambda_archive=fileb://$parent_directory/lambda_code.zip
 requested_layer_version=$(jq .version <config.json)
-pwd
-ls -l
-ls -l ..
 if aws lambda get-layer-version --layer-name "$layer2_name" --version-number "$requested_layer_version"; then
 	echo "version found"
 else
 	echo "error code $?"
 	echo "version not found, building layer"
 	sh build_layer.sh
+	#check size, to remove
+	pwd
+	ls -lht
+	ls -lht ..
 	aws lambda publish-layer-version --layer-name "$layer2_name" --zip-file "$layer2_archive"
 fi
 if [ "$CREATE_LAMBDA" = "true" ]; then
