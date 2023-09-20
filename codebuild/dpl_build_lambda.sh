@@ -5,10 +5,14 @@ echo "start script"
 parent_directory=$(dirname "$PWD")
 sh build_lambda.sh
 function wait_lambda {
+	#for max 6 times sleeps for n seconds if function is not active
 	get_function=""
-	while [ "$get_function" != "Successful" ]; do
+	max_count=6
+	count=0
+	while [ "$get_function" != "ActiveSuccessful" ] || [ "$count" -lt "$max_count" ]; do
+		count=$((count = count + 1))
 		echo "$get_function"
-		get_function=$(aws lambda get-function --function-name "$LAMBDA_NAME" --query 'Configuration.LastUpdateStatus')
+		get_function=$(aws lambda get-function --function-name "$LAMBDA_NAME" | jq -r '.Configuration|[.State,.LastUpdateStatus]|join("")')
 		sleep 10
 	done
 }
@@ -30,8 +34,8 @@ else
 	aws lambda publish-layer-version --layer-name "$layer2_name" --zip-file "$layer2_archive"
 fi
 #exit
-get_function=$(aws lambda get-function --function-name "$LAMBDA_NAME")
-exit
+#get_function=$(aws lambda get-function --function-name "$LAMBDA_NAME")
+#exit
 #get_layer_version=$(echo "$get_function" | jq '.Configuration|.Layers|.[1]'| jq .Arn | perl -ne 'print "$1\n" if /:(\d+)\"/')
 #echo "version found: $get_layer_version"
 #put_layer_version=$(jq .version < config.json)
