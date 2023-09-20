@@ -10,7 +10,13 @@ layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
 layer2_archive=fileb://lambda_layer.zip
 lambda_archive=fileb://lambda.zip
 requested_layer_version=$(jq .version < config.json)
-aws lambda get-layer-version --layer-name "$layer2_name" --version-number "$requested_layer_version"
+if aws lambda get-layer-version --layer-name "$layer2_name" --version-number "$requested_layer_version"
+then
+  echo "version found"
+else
+  echo "error code $?"
+  echo "version not found"
+fi
 exit
 get_function=$(aws lambda get-function  --function-name "$LAMBDA_NAME")
 get_layer_version=$(echo "$get_function" | jq '.Configuration|.Layers|.[1]'| jq .Arn | perl -ne 'print "$1\n" if /:(\d+)\"/')
