@@ -7,7 +7,8 @@ sh build_lambda.sh
 #aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn  "$QUEUE"
 #exit
 layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
-layer2_archive=fileb://layer.zip
+layer2_archive=fileb://lambda_layer.zip
+lambda_archive=fileb://lambda.zip
 requested_layer_version=$(jq .version < config.json)
 aws lambda get-layer-version --layer-name "$layer2_name" --version-number "$requested_layer_version"
 exit
@@ -25,11 +26,11 @@ then
 fi
 if [ "$CREATE_LAMBDA" = "true" ] 
 then
-  aws lambda create-function --function-name "$LAMBDA_NAME" --zip-file fileb://lambda.zip --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$LAMBDA_LAYER_1_VERSION" "$LAMBDA_LAYER_2:$put_layer_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE"  
+  aws lambda create-function --function-name "$LAMBDA_NAME" --zip-file "$lambda_archive" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$LAMBDA_LAYER_1_VERSION" "$LAMBDA_LAYER_2:$put_layer_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE"  
   aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn  "$QUEUE"
 else
   aws lambda update-function-configuration --function-name "$LAMBDA_NAME"  --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$LAMBDA_LAYER_1_VERSION" "$LAMBDA_LAYER_2:$put_layer_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE"
-  aws lambda update-function-code --function-name "$LAMBDA_NAME" --zip-file fileb://lambda.zip --publish
+  aws lambda update-function-code --function-name "$LAMBDA_NAME" --zip-file "$lambda_archive"  --publish
 fi
 aws lambda put-function-concurrency --function-name "$LAMBDA_NAME" --reserved-concurrent-executions "$LAMBDA_CONCURRENCY"
 echo "end script"
