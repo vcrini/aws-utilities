@@ -7,8 +7,8 @@ sh build_lambda.sh
 #aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn  "$QUEUE"
 #exit
 layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
-layer2_archive=fileb://lambda_layer.zip
-lambda_archive=fileb://lambda_code.zip
+layer2_archive=fileb://../lambda_layer.zip
+lambda_archive=fileb://../lambda_code.zip
 requested_layer_version=$(jq .version < config.json)
 ls -l 
 ls -l ..
