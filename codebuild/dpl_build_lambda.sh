@@ -8,7 +8,7 @@ sh build_lambda.sh
 #exit
 layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
 layer2_archive=fileb://lambda_layer.zip
-lambda_archive=fileb://lambda.zip
+lambda_archive=fileb://lambda_code.zip
 requested_layer_version=$(jq .version < config.json)
 if aws lambda get-layer-version --layer-name "$layer2_name" --version-number "$requested_layer_version"
 then
