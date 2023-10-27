@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 #  pre_build:
 echo "start script"
+
+ENVIRONMENT=$(perl -e '@_=map {"$_=$ENV{$_}"} qw(NON_PRIORITY_QUEUE_URL PRIORITY_QUEUE_URL PRIORITY_QUEUE_ARN OUTPUT_QUEUE_URL RDS_SQL_TYPE RDS_SERVER_NAME RDS_PORT RDS_DB_NAME RDS_USER); print join(",",@_)')
+
+printenv
 IFS=',' read -r -a delete_events <<< "$DELETE_EVENTS"
 parent_directory=$(dirname "$PWD")
 QUEUE2=$PRIORITY_QUEUE_ARN
@@ -54,7 +58,7 @@ if [ "$CREATE_LAMBDA" = "true" ]; then
     aws lambda delete-event-source-mapping --uuid  "${delete_events[$i]}"
   done
 
-  aws lambda create-function --function-name "$LAMBDA_NAME" --zip-file "$lambda_archive" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_0:$LAMBDA_LAYER_0_VERSION" "$LAMBDA_LAYER_1:$requested_layer1_version" "$LAMBDA_LAYER_2:$requested_layer2_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE"  --vpc-config SubnetIds="$LAMBDA_SUBNET",SecurityGroupIds="$LAMBDA_SECURITY_GROUP" --tags "$LAMBDA_TAGS"
+  aws lambda create-function --function-name "$LAMBDA_NAME" --zip-file "$lambda_archive" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_0:$LAMBDA_LAYER_0_VERSION" "$LAMBDA_LAYER_1:$requested_layer1_version" "$LAMBDA_LAYER_2:$requested_layer2_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE"  --vpc-config SubnetIds="$LAMBDA_SUBNET",SecurityGroupIds="$LAMBDA_SECURITY_GROUP" --tags "$LAMBDA_TAGS" --environment "Variables={$ENVIRONMENT}"
   aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn "$QUEUE" --batch-size "$QUEUE_BATCH_SIZE" --maximum-batching-window-in-seconds "$QUEUE_BATCH_WINDOW" --scaling-config MaximumConcurrency="$QUEUE_MAXIMUM_CONCURRENCY"
   aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn "$QUEUE2" --batch-size "$QUEUE2_BATCH_SIZE" --maximum-batching-window-in-seconds "$QUEUE2_BATCH_WINDOW" --scaling-config MaximumConcurrency="$QUEUE2_MAXIMUM_CONCURRENCY"
 else
