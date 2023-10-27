@@ -3,6 +3,7 @@
 echo "start script"
 IFS=',' read -r -a delete_events <<< "$DELETE_EVENTS"
 parent_directory=$(dirname "$PWD")
+QUEUE2=$PRIORITY_QUEUE_ARN
 sh build_lambda.sh
 function wait_lambda {
   #for max 6 times sleeps for n seconds if function is not active
