@@ -62,7 +62,7 @@ if [ "$CREATE_LAMBDA" = "true" ]; then
   aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn "$QUEUE" --batch-size "$QUEUE_BATCH_SIZE" --maximum-batching-window-in-seconds "$QUEUE_BATCH_WINDOW" --scaling-config MaximumConcurrency="$QUEUE_MAXIMUM_CONCURRENCY"
   aws lambda create-event-source-mapping --function-name "$LAMBDA_NAME" --event-source-arn "$QUEUE2" --batch-size "$QUEUE2_BATCH_SIZE" --maximum-batching-window-in-seconds "$QUEUE2_BATCH_WINDOW" --scaling-config MaximumConcurrency="$QUEUE2_MAXIMUM_CONCURRENCY"
 else
-  aws lambda update-function-configuration --function-name "$LAMBDA_NAME" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_0:$LAMBDA_LAYER_0_VERSION" "$LAMBDA_LAYER_1:$requested_layer1_version" "$LAMBDA_LAYER_2:$requested_layer2_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE" --tracing-config Modes=$TRACING_CONFIG_MODE
+  aws lambda update-function-configuration --function-name "$LAMBDA_NAME" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_0:$LAMBDA_LAYER_0_VERSION" "$LAMBDA_LAYER_1:$requested_layer1_version" "$LAMBDA_LAYER_2:$requested_layer2_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE" --tracing-config Mode=$TRACING_CONFIG_MODE
   wait_lambda
   aws lambda update-function-code --function-name "$LAMBDA_NAME" --zip-file "$lambda_archive" --publish
 fi
