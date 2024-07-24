@@ -38,25 +38,24 @@ else
   ls -lht ..
   aws lambda publish-layer-version --layer-name "$layer1_name" --zip-file "$layer1_archive"
 fi
-if aws lambda get-layer-version --layer-name "$layer2_name" --version-number "$requested_layer2_version"; then
-  echo "version found"
-else
-  echo "error code $?"
-  echo "version not found, building layer"
-  sh build_layer_2.sh
-  #check size, to remove
-  pwd
-  ls -lht
-  ls -lht ..
-  aws lambda publish-layer-version --layer-name "$layer2_name" --zip-file "$layer2_archive"
-fi
+# if aws lambda get-layer-version --layer-name "$layer2_name" --version-number "$requested_layer2_version"; then
+#   echo "version found"
+# else
+#   echo "error code $?"
+#   echo "version not found, building layer"
+#   sh build_layer_2.sh
+#   #check size, to remove
+#   pwd
+#   ls -lht
+#   ls -lht ..
+#   aws lambda publish-layer-version --layer-name "$layer2_name" --zip-file "$layer2_archive"
+# fi
 if [ "$CREATE_LAMBDA" = "true" ]; then
   echo "this should never happen so now I exit with code 2"
   exit 2
 else
   # maybe this can be removed
-  # aws lambda update-function-configuration --function-name "$LAMBDA_NAME" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_0:$LAMBDA_LAYER_0_VERSION" "$LAMBDA_LAYER_1:$requested_layer1_version" "$LAMBDA_LAYER_2:$requested_layer2_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE" --tracing-config Mode="$TRACING_CONFIG_MODE"
-  aws lambda update-function-configuration --function-name "$LAMBDA_NAME" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$requested_layer1_version" "$LAMBDA_LAYER_2:$requested_layer2_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE" --tracing-config Mode="$TRACING_CONFIG_MODE"
+  aws lambda update-function-configuration --function-name "$LAMBDA_NAME" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$requested_layer1_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE" --tracing-config Mode="$TRACING_CONFIG_MODE"
   wait_lambda
   aws lambda update-function-code --function-name "$LAMBDA_NAME" --zip-file "$lambda_archive" --publish
 fi
