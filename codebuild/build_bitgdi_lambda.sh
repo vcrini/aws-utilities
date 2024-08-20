@@ -56,7 +56,7 @@ if [ "$CREATE_LAMBDA" = "true" ]; then
   exit 2
 else
   # maybe this can be removed
-  aws lambda update-function-configuration --function-name "$LAMBDA_NAME" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$requested_layer1_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE" --tracing-config Mode="$TRACING_CONFIG_MODE"
+  aws lambda update-function-configuration --function-name "$LAMBDA_NAME" --handler "$LAMBDA_HANDLER" --runtime "$LAMBDA_RUNTIME" --role "$LAMBDA_ROLE" --layers "$LAMBDA_LAYER_1:$requested_layer1_version" --timeout "$LAMBDA_TIMEOUT" --memory-size "$LAMBDA_MEMORY_SIZE" --tracing-config Mode="$TRACING_CONFIG_MODE"  --environment "Variables={$ENVIRONMENT}"
   wait_lambda
   aws lambda update-function-code --function-name "$LAMBDA_NAME" --zip-file "$lambda_archive" --publish
 fi
