@@ -17,8 +17,9 @@ function wait_lambda {
   done
 }
 
-# ENVIRONMENT=$(perl -e '@_=map {"$_=$ENV{$_}"} qw(NON_PRIORITY_QUEUE_URL PRIORITY_QUEUE_URL PRIORITY_QUEUE_ARN OUTPUT_QUEUE_URL RDS_SQL_TYPE RDS_SERVER_NAME RDS_PORT RDS_DB_NAME RDS_USER); print join(",",@_)')
-# echo "Environment is $ENVIRONMENT"
+
+ENVIRONMENT=$(perl -e '@_=map {"$_=$ENV{$_}"} qw(DRIVER SERVER DATABASE UID); print join(",",@_)')
+echo "Environment is $ENVIRONMENT"
 # layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
 # layer2_archive=fileb://$parent_directory/lambda_layer_2.zip
 layer1_name=$(echo "$LAMBDA_LAYER_1" | perl -ne 'print $1 if /:([^:]+)$/')
