@@ -18,7 +18,7 @@ function wait_lambda {
 }
 
 
-ENVIRONMENT=$(perl -e '@_=map {"$_=$ENV{$_}"} qw($ENV{ENV_LIST}); print join(",",@_)')
+ENVIRONMENT=$(perl -e '@_=map {"$_=$ENV{$_}"} split " ", $ENV{"ENV_LIST"}; print join(",",@_)')
 echo "Environment is $ENVIRONMENT"
 # layer2_name=$(echo "$LAMBDA_LAYER_2" | perl -ne 'print $1 if /:([^:]+)$/')
 # layer2_archive=fileb://$parent_directory/lambda_layer_2.zip
